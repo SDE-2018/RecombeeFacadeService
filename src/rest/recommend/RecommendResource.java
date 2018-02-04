@@ -1,5 +1,6 @@
 package rest.recommend;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -13,6 +14,15 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
+
+import com.recombee.api_client.RecombeeClient;
+import com.recombee.api_client.api_requests.ItemBasedRecommendation;
+import com.recombee.api_client.api_requests.UserBasedRecommendation;
+import com.recombee.api_client.bindings.Recommendation;
+import com.recombee.api_client.exceptions.ApiException;
+
+import recombee.client.RecombeeAPIClient;
+import util.FacadeUtil;
 
 
 
@@ -38,6 +48,11 @@ public class RecommendResource {
     private static final Logger logger =
             Logger.getLogger(RecommendResource.class.getName());
     
+    private RecombeeClient client = RecombeeAPIClient.getClient();
+    
+    static {
+    	logger.addHandler(FacadeUtil.getDefaultFileHandler());
+    }
     
     /**
      * Get simple user-based recommendations.
@@ -47,11 +62,27 @@ public class RecommendResource {
      * @return list of items id
      */
     @GET
-    @Produces({MediaType.TEXT_XML,  MediaType.APPLICATION_JSON ,  MediaType.APPLICATION_XML })
-    @Path("{userId}")
-    public List<String> getRecommendationByUserId(@PathParam("userId") int userId, int count) {
-        return null;
+    @Produces({MediaType.APPLICATION_JSON  })
+    @Path("user/{userId}/{count}")
+    public List<String> getRecommendationByUserId(@PathParam("userId") String userId,
+    											@PathParam("count") long count) {
+    	logger.info("getRecommendationByUserId: " + userId 
+									+ " " + Long.toString(count));
+    	List<String> result = new ArrayList<>(); 
+    	Recommendation [] recs = null;
+    	try {
+    		 recs = client.send(new UserBasedRecommendation(userId, count));
+    		 for (Recommendation r: recs) {
+    			 result.add(r.getId());
+    		 }
+		} catch (ApiException e) {
+			e.printStackTrace();
+			logger.info("Couldn't get user based recommendation from the Recombee!");
+			logger.info(e.getMessage());
+		}
+		return result;   	
     }
+    
     
     /**
      * Get simple item-based recommendations.
@@ -61,11 +92,60 @@ public class RecommendResource {
      * @return list of items id
      */
     @GET
-    @Produces({MediaType.TEXT_XML,  MediaType.APPLICATION_JSON ,  MediaType.APPLICATION_XML })
-    @Path("{itemId}")
-    public List<String> getRecommendationByItemId(@PathParam("itemId") int itemId, int count) {
-        return null;
+    @Produces({ MediaType.APPLICATION_JSON  })
+    @Path("item/{itemId}/{count}")
+    public List<String> getRecommendationByItemId(@PathParam("itemId") String itemId,
+    											@PathParam("count") long count) {
+    	logger.info("getRecommendationByItemId: " + itemId 
+											+ " " + Long.toString(count));
+    	List<String> result = new ArrayList<>(); 
+    	Recommendation [] recs = null;
+    	try {
+    		 recs = client.send(new ItemBasedRecommendation(itemId, count));
+    		 for (Recommendation r: recs) {
+    			 result.add(r.getId());
+    		 }
+		} catch (ApiException e) {
+			e.printStackTrace();
+			logger.info("Couldn't get item based recommendation from the Recombee!");
+			logger.info(e.getMessage());
+		}  	
+        return result;
     }
 
+    /**
+     * Get simple item-based recommendations.
+     * 
+     * @param itemId if the given item
+     * @param targetUserId is target user for which we are requesting a recommendation
+     * @param count number of recommendations
+     * @return list of items id
+     */
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON  })
+    @Path("user/{userId}item/{itemId}/{count}")
+    public List<String> getRecommendationByItemIdTargetUser(@PathParam("userId") String targetUserId,
+    											@PathParam("itemId") String itemId,
+    											@PathParam("count") long count) {
+    	logger.info("getRecommendationByItemId: " + itemId 
+											+ " " + Long.toString(count));
+    	List<String> result = new ArrayList<>(); 
+    	Recommendation [] recs = null;
+    	try {
+    		 recs = client.send(new ItemBasedRecommendation(itemId, count)
+    				 .setTargetUserId(targetUserId));
+    		 for (Recommendation r: recs) {
+    			 result.add(r.getId());
+    		 }
+		} catch (ApiException e) {
+			e.printStackTrace();
+			logger.info("Couldn't get item based recommendation from the Recombee!");
+			logger.info(e.getMessage());
+		}  	
+        return result;
+    }
+    
+    
+    
     
 }
