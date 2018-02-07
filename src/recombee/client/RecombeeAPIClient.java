@@ -9,12 +9,12 @@ import com.recombee.api_client.RecombeeClient;
 
 public class RecombeeAPIClient {
 	
-	private static RecombeeClient client;
+	private static RecombeeClient client = null;
 	
 	private static String RECOMBEE_TOKEN;
 	
 	private static String DB_NAME;
-	
+	/*
 	static {
 		Properties properties = new Properties();
         try {
@@ -30,8 +30,12 @@ public class RecombeeAPIClient {
         DB_NAME = properties.getProperty("DB_NAME");
         client = new RecombeeClient(DB_NAME, RECOMBEE_TOKEN);
 	}
-
+*/
 	public static RecombeeClient getClient() {
+		if (client != null) {
+			return client;
+		}
+		client = RecombeeUtil.getRecombeeClient();
 		return client;
 	}
 	

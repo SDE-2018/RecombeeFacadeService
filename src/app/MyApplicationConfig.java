@@ -1,4 +1,4 @@
-package rest.app;
+package app;
 
 import javax.ws.rs.ApplicationPath;
 
