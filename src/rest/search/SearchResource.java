@@ -13,7 +13,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-
+/**
+ * TODO!
+ * @author ivan
+ *
+ */
 @Stateless 
 @LocalBean 
 @Path("/search")
@@ -27,11 +31,5 @@ public class SearchResource {
     private static final Logger logger =
             Logger.getLogger(SearchResource.class.getName());
     
-    
-    @GET
-    @Produces({MediaType.TEXT_XML,  MediaType.APPLICATION_JSON ,  MediaType.APPLICATION_XML })
-    public List<String> getPersonsBrowser() {
-        return null;
-    }
 
 }
