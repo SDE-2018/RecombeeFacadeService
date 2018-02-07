@@ -9,6 +9,6 @@ To run the service you need to create a Recombee database and follow one of the 
 Then run `ant create.war`.
 
 Sample call at user based recommendation `https://rfs-chernukha.herokuapp.com/recommend/user/213254394/1` will return you:  
-`["12959"]` that is the item id at Recombee database.
+`["<id>"]` that is the item id at Recombee database.
 
 For details, please, take a look at Javadoc [here](https://merryhunter.github.io/trentinoskibot/).
